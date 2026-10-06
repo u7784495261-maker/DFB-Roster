@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<link rel="manifest" href="manifest.webmanifest">
+<title>My Roster</title>
+<style>
+:root{--nav:#111827;--day:#234b2d;--night:#193d52;--accent:#ff7043;--text:#f3f4f6;--muted:#aeb8c2;--surface:#1b222c;--surface2:#222b36;--border:#36404c}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--text);background:#0d1117}
+header{background:var(--nav);color:#fff;padding:18px 18px 14px;position:sticky;top:0;z-index:3}
+h1{margin:0;font-size:25px}.sub{opacity:.8;font-size:13px;margin-top:3px}
+.controls{display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--surface);position:sticky;top:75px;z-index:2;border-bottom:1px solid var(--border)}
+button{border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:10px;padding:9px 13px;font-size:16px}.monthTitle{font-weight:700;font-size:19px}
+main{max-width:850px;margin:auto}.card{margin:12px;background:var(--surface);border-radius:14px;box-shadow:0 2px 10px #0000000d;padding:15px}
+.next{display:flex;justify-content:space-between;align-items:center}.next strong{font-size:19px}.pill{padding:7px 10px;border-radius:9px;font-weight:700}.daypill{background:#285a35;color:#e9ffe9}.nightpill{background:#1d4961;color:#e7f7ff}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);background:var(--surface);margin:12px;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.dow{padding:9px 2px;text-align:center;font-weight:700;background:#252e39;font-size:12px}.cell{min-height:104px;border-top:1px solid var(--border);border-right:1px solid var(--border);padding:7px 5px;position:relative}.cell:nth-child(7n){border-right:0}
+.num{font-size:12px;font-weight:700;color:#aeb8c2}.shift{margin-top:7px;border-radius:8px;padding:8px 4px;text-align:center;font-weight:700;font-size:12px}.shift small{display:block;font-weight:500;margin-top:3px}.day{background:var(--day)}.night{background:var(--night)}.today{outline:3px solid var(--accent);outline-offset:-3px}
+.off{color:#a2adb2}.legend{display:flex;gap:12px;justify-content:center;font-size:12px;margin:12px}.dot{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-right:4px}
+
+.editBtn{background:#064b6b;color:#fff;border:0;width:100%;margin-top:10px;font-weight:700}
+.modal{display:none;position:fixed;inset:0;background:#0008;z-index:10;align-items:flex-end;justify-content:center}
+.modal.show{display:flex}.modalBox{background:var(--surface);width:100%;max-width:600px;border-radius:18px 18px 0 0;padding:20px;box-shadow:0 -5px 25px #0003}
+.modalBox h2{margin:0 0 5px}.modalDate{color:var(--muted);margin-bottom:15px}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:9px}.options button{font-weight:700;padding:13px}
+.opt-comp{background:#5a4717;color:#fff3c4}.opt-sick{background:#5a2630;color:#ffdce2}.opt-annual{background:#263e63;color:#dceaff}.opt-other{background:#49356b;color:#eadcff}.opt-reset{background:#343a40;color:#f1f3f5}
+.close{width:100%;margin-top:12px}
+.customShift{margin-top:10px;font-size:13px;color:var(--muted)}
+
+@media(max-width:600px){.cell{min-height:88px}.shift{font-size:11px;padding:6px 2px}.shift small{font-size:9px}.monthTitle{font-size:17px}}
+</style>
+
+<style>
+:root{
+  --nav:#0b0f14!important;
+  --day:#183b26!important;
+  --night:#143246!important;
+  --accent:#ff6b3d!important;
+  --text:#f5f7fa!important;
+  --muted:#98a3b3!important;
+  --surface:#151a21!important;
+  --surface2:#1c232d!important;
+  --border:#2c3542!important;
+}
+*{box-sizing:border-box}
+body{
+  background:
+    radial-gradient(circle at 15% -10%,rgba(255,107,61,.13),transparent 32%),
+    radial-gradient(circle at 100% 0%,rgba(64,144,255,.10),transparent 28%),
+    #0b0f14!important;
+  color:var(--text)!important;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
+header{
+  background:rgba(11,15,20,.88)!important;
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,.07)!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.22);
+}
+h1{font-size:22px!important;letter-spacing:-.4px}
+.card{
+  background:linear-gradient(145deg,rgba(27,34,44,.96),rgba(18,23,30,.96))!important;
+  border:1px solid rgba(255,255,255,.07)!important;
+  box-shadow:0 12px 30px rgba(0,0,0,.20)!important;
+  border-radius:18px!important;
+}
+button,select{
+  background:#1d2530!important;
+  color:#f5f7fa!important;
+  border:1px solid #303b49!important;
+  border-radius:12px!important;
+  min-height:42px;
+  font-weight:600;
+  box-shadow:0 3px 10px rgba(0,0,0,.16);
+}
+button:active{transform:scale(.98)}
+.daypill{
+  background:linear-gradient(145deg,#214d30,#173523)!important;
+  color:#eaffef!important;
+  border:1px solid rgba(96,211,126,.22)!important;
+}
+.nightpill{
+  background:linear-gradient(145deg,#19435a,#122d3d)!important;
+  color:#e8f7ff!important;
+  border:1px solid rgba(76,169,224,.22)!important;
+}
+.offpill{
+  background:linear-gradient(145deg,#222a34,#171c23)!important;
+  color:#aeb8c5!important;
+  border:1px solid rgba(255,255,255,.06)!important;
+}
+.today{
+  outline:2px solid var(--accent)!important;
+  outline-offset:-2px;
+  box-shadow:0 0 0 4px rgba(255,107,61,.10),0 10px 24px rgba(255,107,61,.12)!important;
+}
+.calendar-grid{
+  gap:7px!important;
+}
+.weekday{
+  color:#7f8b9b!important;
+  font-size:11px!important;
+  font-weight:800!important;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+.day{
+  border-radius:14px!important;
+  border:1px solid rgba(255,255,255,.06)!important;
+  overflow:hidden;
+  transition:.15s ease;
+}
+.day:hover{transform:translateY(-1px)}
+.day .date{
+  color:#f5f7fa!important;
+  font-weight:800!important;
+}
+.modal{
+  background:#12171e!important;
+  border:1px solid #303947!important;
+  box-shadow:0 25px 80px rgba(0,0,0,.55)!important;
+  border-radius:22px!important;
+}
+.opt-comp{background:#514315!important;color:#fff3bd!important}
+.opt-sick{background:#552731!important;color:#ffdce2!important}
+.opt-annual{background:#253d61!important;color:#dceaff!important}
+.opt-other{background:#49356a!important;color:#eadcff!important}
+.opt-reset{background:#303741!important;color:#f1f4f7!important}
+.small,.muted{color:var(--muted)!important}
+a{color:#ff9a7a}
+@media(max-width:700px){
+  main{padding:10px!important}
+  .card{border-radius:16px!important}
+}
+</style>
+
+
+<style>
+/* Premium Day/Night contrast */
+.daypill{
+  position:relative;
+  background:
+    radial-gradient(circle at 85% 12%,rgba(137,255,174,.30),transparent 28%),
+    linear-gradient(145deg,#1f6337 0%,#123c25 55%,#0d291a 100%)!important;
+  color:#f0fff4!important;
+  border:1px solid rgba(112,240,145,.38)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.08),0 8px 20px rgba(21,151,72,.16)!important;
+}
+.daypill::after{
+  content:"☀";
+  position:absolute;right:10px;top:8px;
+  font-size:17px;opacity:.75;
+}
+.nightpill{
+  position:relative;
+  background:
+    radial-gradient(circle at 85% 12%,rgba(106,180,255,.25),transparent 28%),
+    linear-gradient(145deg,#173d68 0%,#102846 55%,#09192d 100%)!important;
+  color:#eff8ff!important;
+  border:1px solid rgba(91,171,255,.38)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.08),0 8px 20px rgba(27,104,180,.18)!important;
+}
+.nightpill::after{
+  content:"☾";
+  position:absolute;right:11px;top:7px;
+  font-size:18px;opacity:.8;
+}
+.offpill{
+  background:linear-gradient(145deg,#242a32,#14181e)!important;
+  color:#8994a2!important;
+  border:1px solid rgba(255,255,255,.055)!important;
+}
+.daypill,.nightpill,.offpill{
+  min-height:88px;
+  border-radius:16px!important;
+  padding:12px!important;
+  transition:transform .16s ease,box-shadow .16s ease;
+}
+.daypill:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(30,190,91,.24)!important}
+.nightpill:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(50,140,235,.26)!important}
+.daypill .shift,.nightpill .shift{
+  font-weight:850!important;
+  letter-spacing:.05em!important;
+}
+.daypill .time,.nightpill .time{
+  opacity:.82!important;
+  font-size:12px!important;
+}
+</style>
+
+</head>
+<body>
+<header><div><h1 style="margin-bottom:2px">My Work Roster</h1><div style="font-size:11px;color:#8e99a8;letter-spacing:.08em;text-transform:uppercase">Shift • Leave • Repeat</div></div><div class="sub">Private roster · 4-week cycle · repeats indefinitely</div></header>
+<main>
+<div class="card next" id="next"></div>
+<div class="controls"><button onclick="move(-1)">‹</button><div class="monthTitle" id="title"></div><button onclick="move(1)">›</button></div>
+<div class="grid" id="calendar"></div>
+<div class="legend"><span><i class="dot day"></i>GREEN = DAY 09:00–18:00</span><span><i class="dot night"></i>BLUE = NIGHT 18:00–09:00</span></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px;font-size:11px;font-weight:800;letter-spacing:.04em"><span style="padding:6px 9px;border-radius:999px;background:#174c2b;color:#dfffea">☀ DAY</span><span style="padding:6px 9px;border-radius:999px;background:#16375d;color:#e5f3ff">☾ NIGHT</span><span style="padding:6px 9px;border-radius:999px;background:#242a32;color:#aab3bf">OFF</span></div>
+<div class="card">
+  <strong>Edit your roster</strong>
+  <div style="font-size:13px;color:var(--muted);margin-top:4px">Tap any day in the calendar to add annual leave, comp leave, sick leave or another custom status.</div>
+  <button class="editBtn" onclick="alert('Tap any date in the calendar to edit it.')">How to edit</button>
+</div>
+
+<div class="card" style="font-size:13px;color:var(--muted)">
+<strong>Roster engine</strong><br>
+The roster is generated from a 28-day cycle rather than stored one date at a time, so it can continue indefinitely.
+</div>
+
+<div class="modal" id="modal" onclick="if(event.target===this)closeEdit()">
+  <div class="modalBox">
+    <h2 id="editTitle">Edit day</h2>
+    <div class="modalDate" id="editDate"></div>
+    <div class="options">
+      <button class="opt-comp" onclick="setCustom('Comp Leave')">Comp Leave</button>
+      <button class="opt-sick" onclick="setCustom('Sick Leave')">Sick Leave</button>
+      <button class="opt-annual" onclick="setCustom('Annual Leave')">Annual Leave</button>
+      <button class="opt-other" onclick="setCustom('Other')">Other</button>
+      <button class="opt-reset" onclick="setCustom(null)">Restore Roster</button>
+    </div>
+    <div class="customShift">Custom entries override the automatic roster for that date. Your underlying 4-week cycle remains unchanged.</div>
+    <button class="close" onclick="closeEdit()">Cancel</button>
+  </div>
+</div>
+</main>
+<script>
+const cycle = ["O","O","D","D","N","O","O","O","D","N","N","O","O","D","D","N","O","O","O","D","N","N","O","O","O","D","N","O"];
+// 1 Oct 2026 is cycle day 1 (off). Times are taken from the supplied roster screenshot.
+const anchor = new Date(2026,9,1);
+let view = new Date(2026,9,1);
+const names=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+function clean(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate())}
+function typeFor(d){
+  const diff=Math.floor((clean(d)-anchor)/86400000);
+  let i=((diff%28)+28)%28; return cycle[i];
+}
+function label(t){return t==="D"?"Day":t==="N"?"Night":"Off"}
+function times(t){return t==="D"?"09:00–18:00":t==="N"?"18:00–09:00":""}
+
+const STORAGE_KEY = "myWorkRosterCustomDays";
+function getCustomDays(){ try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}")}catch(e){return {}} }
+function getCustom(k){ return getCustomDays()[k] || null }
+function dateKey(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}` }
+function customColor(v){
+  return v==="Comp Leave" ? "#fff0c7" :
+         v==="Sick Leave" ? "#ffd9df" :
+         v==="Annual Leave" ? "#dce8ff" : "#eadcff";
+}
+let editingKey = null;
+function openEdit(key){
+  editingKey=key;
+  const d=new Date(key+"T12:00:00");
+  document.getElementById("editTitle").textContent="Edit "+d.toLocaleDateString("en-IE",{day:"numeric",month:"long",year:"numeric"});
+  document.getElementById("editDate").textContent=getCustom(key) ? "Current: "+getCustom(key) : "Automatic roster: "+label(typeFor(d));
+  document.getElementById("modal").classList.add("show");
+}
+function closeEdit(){document.getElementById("modal").classList.remove("show");editingKey=null}
+function setCustom(value){
+  if(!editingKey)return;
+  const days=getCustomDays();
+  if(value) days[editingKey]=value; else delete days[editingKey];
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(days));
+  closeEdit(); render();
+}
+
+function render(){
+  const y=view.getFullYear(),m=view.getMonth();
+  document.getElementById("title").textContent=view.toLocaleDateString("en-IE",{month:"long",year:"numeric"});
+  const cal=document.getElementById("calendar");
+  cal.innerHTML=names.map(x=>`<div class="dow">${x}</div>`).join("");
+  const first=new Date(y,m,1), start=first.getDay(), days=new Date(y,m+1,0).getDate();
+  for(let i=0;i<start;i++) cal.innerHTML+=`<div class="cell"></div>`;
+  const today=clean(new Date());
+  for(let n=1;n<=days;n++){
+    const d=new Date(y,m,n),t=typeFor(d),isToday=+d===+today;
+    const key = dateKey(d), custom = getCustom(key);
+    cal.innerHTML+=`<div class="cell ${isToday?"today":""}" onclick="openEdit('${key}')"><div class="num">${n}</div>${custom ? `<div class="shift customShiftBox" style="background:${customColor(custom)}">${custom}<small>Edited</small></div>` : t!=="O"?`<div class="shift ${t==="D"?"day":"night"}">${label(t)}<small>${times(t)}</small></div>`:`<div class="off" style="margin-top:10px;text-align:center">Off</div>`}</div>`;
+  }
+  renderNext();
+}
+function renderNext(){
+  let d=clean(new Date());
+  for(let i=0;i<60;i++){
+    const t=typeFor(d), custom=getCustom(dateKey(d));
+    if(t!=="O" && !custom){
+      document.getElementById("next").innerHTML=`<div><div style="font-size:12px;color:var(--muted)">NEXT SHIFT</div><strong>${d.toLocaleDateString("en-IE",{weekday:"short",day:"numeric",month:"short"})}</strong><div>${times(t)}</div></div><span class="pill ${t==="D"?"daypill":"nightpill"}">${label(t)}</span>`;
+      return;
+    }
+    d.setDate(d.getDate()+1);
+  }
+}
+function move(n){view=new Date(view.getFullYear(),view.getMonth()+n,1);render()}
+render();
+</script>
+</body></html>
